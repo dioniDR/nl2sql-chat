@@ -2,35 +2,81 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NL2SQL - Consultas inteligentes</title>
-  <link rel="stylesheet" href="style.css">
+  <!-- Tailwind CSS vía CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Configuración de Tailwind -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              DEFAULT: '#4a6cf7',
+              light: '#6e8bf9',
+              dark: '#3a55d9',
+            },
+            secondary: {
+              DEFAULT: '#f97316',
+              light: '#fb8c38',
+              dark: '#ea6a10',
+            },
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body>
+<body class="bg-gray-100 text-gray-800 min-h-screen">
+  <div class="container mx-auto px-4 py-8 max-w-5xl">
+    <h1 class="text-3xl font-bold mb-6 text-primary flex items-center gap-2">
+      <span class="text-4xl">🧠</span> NL2SQL - Consultas inteligentes
+    </h1>
 
-  <h1>🧠 NL2SQL - Consultas inteligentes</h1>
+    <!-- Cambiar modo -->
+    <button id="toggleModo" onclick="alternarModo()" 
+      class="mb-4 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md transition-colors duration-200">
+      Cambiar a modo simple
+    </button>
 
-  <!-- Cambiar modo -->
-  <button id="toggleModo" onclick="alternarModo()">Cambiar a modo simple</button>
+    <!-- Modo chat -->
+    <div id="modoChat" class="visible">
+      <div id="historial" class="bg-white rounded-lg shadow-md p-4 mb-4 h-96 overflow-y-auto"></div>
+      <div class="flex flex-col md:flex-row gap-2">
+        <textarea id="pregunta" placeholder="Haz tu pregunta..." 
+          class="flex-grow resize-none border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+        <button onclick="enviarPregunta()" 
+          class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors duration-200">
+          Enviar
+        </button>
+      </div>
+    </div>
 
-  <!-- Modo chat -->
-  <div id="modoChat" class="visible">
-    <div id="historial" class="historial"></div>
-    <textarea id="pregunta" placeholder="Haz tu pregunta..."></textarea>
-    <button onclick="enviarPregunta()">Enviar</button>
-  </div>
+    <!-- Modo simple -->
+    <div id="modoSimple" class="hidden">
+      <div class="flex flex-col md:flex-row gap-2 mb-4">
+        <textarea id="preguntaSimple" placeholder="Pregunta rápida..." 
+          class="flex-grow resize-none border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+        <button onclick="enviarPreguntaSimple()" 
+          class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors duration-200">
+          Enviar
+        </button>
+      </div>
+      <div id="respuestaSimple" class="bg-white rounded-lg shadow-md p-4"></div>
+    </div>
 
-  <!-- Modo simple -->
-  <div id="modoSimple" class="oculto">
-    <textarea id="preguntaSimple" placeholder="Pregunta rápida..."></textarea>
-    <button onclick="enviarPreguntaSimple()">Enviar</button>
-    <div id="respuestaSimple"></div>
-  </div>
-
-  <!-- Panel de consultas guardadas -->
-  <div id="consultasGuardadas" style="display: block;">
-    <button id="toggleConsultas" onclick="alternarPanel()">Mostrar/Ocultar Consultas</button>
-    <div class="header">📦 Consultas guardadas</div>
-    <ul id="listaConsultas"></ul>
+    <!-- Panel de consultas guardadas -->
+    <div id="consultasGuardadas" class="fixed right-4 bottom-4 w-80 bg-white rounded-lg shadow-lg overflow-hidden">
+      <div class="bg-gray-200 p-3 flex justify-between items-center">
+        <div class="font-medium">📦 Consultas guardadas</div>
+        <button id="toggleConsultas" onclick="alternarPanel()" 
+          class="text-sm px-2 py-1 bg-gray-300 hover:bg-gray-400 rounded transition-colors duration-200">
+          Mostrar/Ocultar
+        </button>
+      </div>
+      <ul id="listaConsultas" class="divide-y divide-gray-200 max-h-96 overflow-y-auto p-2"></ul>
+    </div>
   </div>
 
   <script src="script.js"></script>

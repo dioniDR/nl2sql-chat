@@ -4,8 +4,8 @@ let consultasGuardadas = [];
 // 🔁 Cambiar entre modos (chat/simple)
 function alternarModo() {
   modoChat = !modoChat;
-  document.getElementById("modoChat").className = modoChat ? "visible" : "oculto";
-  document.getElementById("modoSimple").className = modoChat ? "oculto" : "visible";
+  document.getElementById("modoChat").className = modoChat ? "visible" : "hidden";
+  document.getElementById("modoSimple").className = modoChat ? "hidden" : "block";
   document.getElementById("toggleModo").innerText = modoChat ? "Cambiar a modo simple" : "Cambiar a modo chat";
 }
 
@@ -15,6 +15,19 @@ function enviarPregunta() {
   const pregunta = input.value.trim();
   if (!pregunta) return;
 
+  // Mostrar loading
+  const historial = document.getElementById("historial");
+  const loadingDiv = document.createElement("div");
+  loadingDiv.className = "flex items-center space-x-2 my-4 text-gray-500";
+  loadingDiv.innerHTML = `
+    <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+    </svg>
+    <span>Procesando consulta...</span>
+  `;
+  historial.appendChild(loadingDiv);
+
   fetch("http://localhost:8000/preguntar", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -22,12 +35,20 @@ function enviarPregunta() {
   })
   .then(res => res.json())
   .then(data => {
+    historial.removeChild(loadingDiv); // Remover indicador de carga
     mostrarEnHistorial(pregunta, data);
     input.value = ""; // limpiar input
 
     if (data.sql && !data.error) {
       guardarConsulta(pregunta, data.sql);
     }
+  })
+  .catch(error => {
+    historial.removeChild(loadingDiv); // Remover indicador de carga
+    const errorDiv = document.createElement("div");
+    errorDiv.className = "bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded my-4";
+    errorDiv.textContent = `Error: ${error.message}`;
+    historial.appendChild(errorDiv);
   });
 }
 
@@ -37,6 +58,18 @@ function enviarPreguntaSimple() {
   const pregunta = input.value.trim();
   if (!pregunta) return;
 
+  // Mostrar loading
+  const respuestaDiv = document.getElementById("respuestaSimple");
+  respuestaDiv.innerHTML = `
+    <div class="flex items-center space-x-2 text-gray-500">
+      <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+      </svg>
+      <span>Procesando consulta...</span>
+    </div>
+  `;
+
   fetch("http://localhost:8000/preguntar", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -44,12 +77,19 @@ function enviarPreguntaSimple() {
   })
   .then(res => res.json())
   .then(data => {
-    document.getElementById("respuestaSimple").innerHTML = renderizarRespuesta(data);
+    respuestaDiv.innerHTML = renderizarRespuesta(data);
     input.value = "";
 
     if (data.sql && !data.error) {
       guardarConsulta(pregunta, data.sql);
     }
+  })
+  .catch(error => {
+    respuestaDiv.innerHTML = `
+      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+        Error: ${error.message}
+      </div>
+    `;
   });
 }
 
@@ -57,12 +97,21 @@ function enviarPreguntaSimple() {
 function mostrarEnHistorial(pregunta, data) {
   const historial = document.getElementById("historial");
   const contenedor = document.createElement("div");
+  contenedor.className = "mb-4 last:mb-0";
 
   contenedor.innerHTML = `
-    <p><strong>Tú:</strong> ${pregunta}</p>
-    <p><strong>SQL:</strong> <code>${data.sql}</code></p>
-    <div>${renderizarRespuesta(data)}</div>
-    <hr>
+    <div class="bg-gray-100 p-3 rounded-lg mb-2">
+      <p class="font-semibold">Tú:</p>
+      <p>${pregunta}</p>
+    </div>
+    <div class="ml-4">
+      <p class="font-semibold">SQL:</p>
+      <div class="bg-gray-800 text-gray-200 p-3 rounded-lg my-2 overflow-x-auto">
+        <code>${data.sql}</code>
+      </div>
+      <div class="mt-2">${renderizarRespuesta(data)}</div>
+    </div>
+    <hr class="my-4 border-gray-200">
   `;
 
   historial.appendChild(contenedor);

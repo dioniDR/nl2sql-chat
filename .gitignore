@@ -265,3 +265,12 @@ nohup.out
 
 # Editor joe
 joe/
+
+# Frontend dependencies and build files
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.cache/
+frontend/.parcel-cache/
+frontend/*.log
+frontend/*.lock
