@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>NL2SQL - Consultas inteligentes</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <h1>🧠 NL2SQL - Consultas inteligentes</h1>
+
+  <!-- Cambiar modo -->
+  <button id="toggleModo" onclick="alternarModo()">Cambiar a modo simple</button>
+
+  <!-- Modo chat -->
+  <div id="modoChat" class="visible">
+    <div id="historial" class="historial"></div>
+    <textarea id="pregunta" placeholder="Haz tu pregunta..."></textarea>
+    <button onclick="enviarPregunta()">Enviar</button>
+  </div>
+
+  <!-- Modo simple -->
+  <div id="modoSimple" class="oculto">
+    <textarea id="preguntaSimple" placeholder="Pregunta rápida..."></textarea>
+    <button onclick="enviarPreguntaSimple()">Enviar</button>
+    <div id="respuestaSimple"></div>
+  </div>
+
+  <!-- Panel de consultas guardadas -->
+  <div id="consultasGuardadas" style="display: block;">
+    <button id="toggleConsultas" onclick="alternarPanel()">Mostrar/Ocultar Consultas</button>
+    <div class="header">📦 Consultas guardadas</div>
+    <ul id="listaConsultas"></ul>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
